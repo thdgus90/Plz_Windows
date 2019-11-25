@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.BoardDAOImpl">
+ 
+<select id="selectList" parameterType="map" resultType="QuestionBoard">
+ 		select quest_number,quest_title,quest_writer,quest_date,readcount from questionboard 
+ 		<where>
+ 	                <if test="keyWord!=null and keyField=='quest_title'">
+ 	                    quest_title like CONCAT('%',#{keyWord},'%')
+ 	                </if>
+ 	                <if test="keyWord!=null and keyField=='quest_content'">
+ 	                    quest_content like CONCAT('%',#{keyWord},'%')
+ 	                </if>
+ 	                <if test="keyWord!=null and keyField=='quest_writer'">
+ 	                    quest_writer like CONCAT('%',#{keyWord},'%')
+ 	                </if>
+ 	                <if test="keyWord!=null and keyField=='all'">
+ 	                    quest_title like CONCAT('%',#{keyWord},'%') or
+ 	                    quest_content like CONCAT('%',#{keyWord},'%') or
+ 	                    quest_writer like CONCAT('%',#{keyWord},'%')
+ 	                </if>
+ 	      </where>
+ 	                     order by ref desc,re_step asc limit #{start}, #{end}
+ 	</select>
+
+
+<select id="selectCount" parameterType="map" resultType="int">
+		select count(*) from questionboard 
+		<where>
+ 	                <if test="keyWord!=null and keyField=='quest_title'">
+ 	                    quest_title like CONCAT('%',#{keyWord},'%')
+ 	                </if>
+ 	                <if test="keyWord!=null and keyField=='quest_content'">
+ 	                    quest_content like CONCAT('%',#{keyWord},'%')
+ 	                </if>
+ 	                <if test="keyWord!=null and keyField=='quest_writer'">
+ 	                    quest_writer like CONCAT('%',#{keyWord},'%')
+ 	                </if>
+ 	                <if test="keyWord!=null and keyField=='all'">
+ 	                    quest_title like CONCAT('%',#{keyWord},'%') or
+ 	                    quest_content like CONCAT('%',#{keyWord},'%') or
+ 	                    quest_writer like CONCAT('%',#{keyWord},'%')
+ 	                </if>
+ 	      </where>
+	</select>
+ 
+ <select id="maxNumber" resultType="int">
+ 		select max(quest_number) from questionboard
+ 	</select>
+ 
+ <update id="stepUpdate" parameterType="map">
+ 		update questionboard set re_step=re_step+1 where ref=#{ref} and re_step > #{re_step}
+ 	</update>
+ 
+ <insert id="insertBoard" parameterType="QuestionBoard">
+ insert into questionboard(mem_id,quest_title,quest_writer,quest_content,quest_date,
+ ref,re_step,re_level,readcount) values('scott',#{quest_title},'scott',#{quest_content},#{quest_date},#{ref},#{re_step},#{re_level},0)
+    </insert>
+ 
+  <update id="updateRead" parameterType="int">
+ 		update questionboard set readcount=readcount+1 where quest_number=#{num}
+ 	</update>
+ 
+ <select id="selectBoard" parameterType="Integer" resultType="QuestionBoard">
+ 		select * from questionboard where quest_number=#{num}
+ 	</select>
+ 
+ <update id="updateArticle" parameterType="QuestionBoard">
+ 		update questionboard set quest_title=#{quest_title},quest_content=#{quest_content}  where quest_number=#{quest_number}
+ 	</update>
+ 
+ <delete id="deleteArticle" parameterType="Integer">
+ 		delete from questionboard where quest_number=#{num}
+ 	</delete>
+ 
+</mapper>
